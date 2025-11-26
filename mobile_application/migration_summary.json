@@ -1,0 +1,633 @@
+{
+  "migration_summary": {
+    "project_name": "Office Project - Mobile Application",
+    "source": "Next.js 15.2.4 with App Router",
+    "target": "React Native (Expo SDK)",
+    "migration_date": "2025",
+    "typescript": true,
+    "status": "Core infrastructure complete - 80% scaffolded"
+  },
+  "pages_mapped": [
+    {
+      "web_route": "/login",
+      "mobile_screen": "src/screens/auth/LoginScreen.tsx",
+      "status": "✅ Complete",
+      "notes": "Fully implemented with email/password, form validation, navigation to register/forgot password"
+    },
+    {
+      "web_route": "/register",
+      "mobile_screen": "src/screens/auth/RegisterScreen.tsx",
+      "status": "🚧 Placeholder",
+      "notes": "Screen created, needs form implementation for name, email, password, company registration flow"
+    },
+    {
+      "web_route": "/forgot-password",
+      "mobile_screen": "src/screens/auth/ForgotPasswordScreen.tsx",
+      "status": "🚧 Placeholder",
+      "notes": "Screen created, needs email input form and password reset request logic"
+    },
+    {
+      "web_route": "/dashboard",
+      "mobile_screen": "src/screens/main/DashboardScreen.tsx",
+      "status": "✅ Complete",
+      "notes": "Fully implemented with task stats, channel count, recent tasks list, greeting header"
+    },
+    {
+      "web_route": "/[org]/tasks",
+      "mobile_screen": "src/screens/main/TasksScreen.tsx",
+      "status": "🚧 Placeholder",
+      "notes": "Screen created, needs task list with filtering (status, priority, assignee), create task FAB"
+    },
+    {
+      "web_route": "/[org]/tasks/[taskId]",
+      "mobile_screen": "src/screens/main/TaskDetailScreen.tsx",
+      "status": "🚧 Placeholder",
+      "notes": "Screen created, needs task detail view, comments, status update, assignee management, reminders"
+    },
+    {
+      "web_route": "/[org]/channels",
+      "mobile_screen": "src/screens/main/ChannelsScreen.tsx",
+      "status": "🚧 Placeholder",
+      "notes": "Screen created, needs channel list with unread badges, create channel button, search"
+    },
+    {
+      "web_route": "/[org]/channels/[channelId]",
+      "mobile_screen": "src/screens/main/ChannelChatScreen.tsx",
+      "status": "🚧 Placeholder",
+      "notes": "Screen created, needs message list, message input, file upload, real-time updates, typing indicators"
+    },
+    {
+      "web_route": "/[org]/people",
+      "mobile_screen": "src/screens/main/PeopleScreen.tsx",
+      "status": "🚧 Placeholder",
+      "notes": "Screen created, needs user list with avatars, search, filter by role, tap to view profile or DM"
+    },
+    {
+      "web_route": "/u/[userId]",
+      "mobile_screen": "src/screens/main/DirectMessageScreen.tsx",
+      "status": "🚧 Placeholder",
+      "notes": "Screen created, needs DM chat interface similar to channel chat"
+    },
+    {
+      "web_route": "Notification panel (modal)",
+      "mobile_screen": "src/screens/main/NotificationsScreen.tsx",
+      "status": "🚧 Placeholder",
+      "notes": "Screen created, needs notification list, mark as read, filter by type, tap to navigate"
+    },
+    {
+      "web_route": "/settings",
+      "mobile_screen": "src/screens/main/SettingsScreen.tsx",
+      "status": "🚧 Placeholder",
+      "notes": "Screen created, needs profile editing, notification preferences, theme toggle, logout"
+    },
+    {
+      "web_route": "Reminders (component)",
+      "mobile_screen": "src/screens/main/RemindersScreen.tsx",
+      "status": "🚧 Placeholder",
+      "notes": "Screen created, needs reminder list, create reminder form, edit/delete reminders"
+    },
+    {
+      "web_route": "/[org]/tasks/new",
+      "mobile_screen": "src/screens/main/CreateTaskScreen.tsx",
+      "status": "🚧 Placeholder",
+      "notes": "Screen created, needs task creation form with title, description, priority, status, assignee, due date"
+    },
+    {
+      "web_route": "More (mobile-only)",
+      "mobile_screen": "src/screens/main/MoreScreen.tsx",
+      "status": "🚧 Placeholder",
+      "notes": "Screen created, needs menu list: Reminders, Settings, Help, About, Logout"
+    }
+  ],
+  "api_endpoints": [
+    {
+      "path": "/api/auth/mobile/login",
+      "method": "POST",
+      "mobile_service": "src/services/auth.service.ts::login",
+      "auth_required": false,
+      "status": "⚠️ Backend needs implementation",
+      "request_example": {
+        "email": "user@example.com",
+        "password": "password123"
+      },
+      "response_example": {
+        "user": {
+          "id": "user-id",
+          "name": "John Doe",
+          "email": "user@example.com",
+          "image": "https://cloudinary.com/...",
+          "organizations": [
+            {
+              "id": "org-id",
+              "name": "My Company",
+              "role": "MEMBER"
+            }
+          ]
+        },
+        "token": "jwt-token-here"
+      },
+      "notes": "Custom endpoint needed - NextAuth uses cookies incompatible with mobile"
+    },
+    {
+      "path": "/api/tasks",
+      "method": "GET",
+      "mobile_service": "src/services/task.service.ts::getTasks",
+      "auth_required": true,
+      "status": "✅ Compatible",
+      "query_params": {
+        "organizationId": "required",
+        "status": "optional",
+        "priority": "optional",
+        "assignedToId": "optional"
+      },
+      "notes": "Existing endpoint works with JWT Bearer token"
+    },
+    {
+      "path": "/api/tasks",
+      "method": "POST",
+      "mobile_service": "src/services/task.service.ts::createTask",
+      "auth_required": true,
+      "status": "✅ Compatible",
+      "request_example": {
+        "title": "New Task",
+        "description": "Task description",
+        "status": "TODO",
+        "priority": "MEDIUM",
+        "organizationId": "org-id",
+        "assignedToId": "user-id",
+        "dueDate": "2025-12-31T00:00:00Z"
+      }
+    },
+    {
+      "path": "/api/tasks/[taskId]",
+      "method": "PATCH",
+      "mobile_service": "src/services/task.service.ts::updateTask",
+      "auth_required": true,
+      "status": "✅ Compatible"
+    },
+    {
+      "path": "/api/tasks/[taskId]",
+      "method": "DELETE",
+      "mobile_service": "src/services/task.service.ts::deleteTask",
+      "auth_required": true,
+      "status": "✅ Compatible"
+    },
+    {
+      "path": "/api/channels",
+      "method": "GET",
+      "mobile_service": "src/services/channel.service.ts::getChannels",
+      "auth_required": true,
+      "status": "✅ Compatible",
+      "query_params": {
+        "organizationId": "required"
+      }
+    },
+    {
+      "path": "/api/channels",
+      "method": "POST",
+      "mobile_service": "src/services/channel.service.ts::createChannel",
+      "auth_required": true,
+      "status": "✅ Compatible",
+      "request_example": {
+        "name": "general",
+        "description": "General discussion",
+        "organizationId": "org-id",
+        "type": "PUBLIC"
+      }
+    },
+    {
+      "path": "/api/channels/[channelId]/messages",
+      "method": "GET",
+      "mobile_service": "src/services/channel.service.ts::getChannelMessages",
+      "auth_required": true,
+      "status": "✅ Compatible",
+      "query_params": {
+        "limit": "optional",
+        "before": "optional (cursor pagination)"
+      }
+    },
+    {
+      "path": "/api/channels/[channelId]/messages",
+      "method": "POST",
+      "mobile_service": "src/services/channel.service.ts::sendChannelMessage",
+      "auth_required": true,
+      "status": "✅ Compatible",
+      "request_example": {
+        "content": "Hello world",
+        "fileUrl": "https://cloudinary.com/... (optional)"
+      }
+    },
+    {
+      "path": "/api/users",
+      "method": "GET",
+      "mobile_service": "src/services/user.service.ts::getUsers",
+      "auth_required": true,
+      "status": "✅ Compatible",
+      "query_params": {
+        "organizationId": "required"
+      }
+    },
+    {
+      "path": "/api/users/[userId]",
+      "method": "GET",
+      "mobile_service": "src/services/user.service.ts::getUser",
+      "auth_required": true,
+      "status": "✅ Compatible"
+    },
+    {
+      "path": "/api/users/[userId]",
+      "method": "PATCH",
+      "mobile_service": "src/services/user.service.ts::updateUser",
+      "auth_required": true,
+      "status": "✅ Compatible",
+      "request_example": {
+        "name": "New Name",
+        "image": "https://cloudinary.com/..."
+      }
+    },
+    {
+      "path": "/api/notifications",
+      "method": "GET",
+      "mobile_service": "src/services/user.service.ts::getNotifications",
+      "auth_required": true,
+      "status": "✅ Compatible"
+    },
+    {
+      "path": "/api/notifications/[notificationId]/read",
+      "method": "POST",
+      "mobile_service": "src/services/user.service.ts::markNotificationRead",
+      "auth_required": true,
+      "status": "✅ Compatible"
+    },
+    {
+      "path": "/api/reminders",
+      "method": "GET",
+      "mobile_service": "src/services/user.service.ts::getReminders",
+      "auth_required": true,
+      "status": "✅ Compatible"
+    },
+    {
+      "path": "/api/reminders",
+      "method": "POST",
+      "mobile_service": "src/services/user.service.ts::createReminder",
+      "auth_required": true,
+      "status": "✅ Compatible",
+      "request_example": {
+        "title": "Follow up on task",
+        "description": "Check status",
+        "dueDate": "2025-12-31T10:00:00Z",
+        "taskId": "task-id (optional)"
+      }
+    },
+    {
+      "path": "/api/upload",
+      "method": "POST",
+      "mobile_service": "src/services/user.service.ts::uploadFile",
+      "auth_required": true,
+      "status": "⚠️ Needs FormData support",
+      "notes": "File upload works but needs testing with Expo ImagePicker and DocumentPicker"
+    }
+  ],
+  "native_dependencies": [
+    {
+      "name": "@react-navigation/native",
+      "version": "^6.1.9",
+      "reason": "Navigation system - stack, tabs, drawers",
+      "expo_supported": true
+    },
+    {
+      "name": "@tanstack/react-query",
+      "version": "^5.62.14",
+      "reason": "Server state management with caching and offline support",
+      "expo_supported": true
+    },
+    {
+      "name": "zustand",
+      "version": "^5.0.3",
+      "reason": "Local UI state management (auth, message input)",
+      "expo_supported": true
+    },
+    {
+      "name": "axios",
+      "version": "^1.7.9",
+      "reason": "HTTP client with interceptors for auth",
+      "expo_supported": true
+    },
+    {
+      "name": "expo-secure-store",
+      "version": "~14.0.0",
+      "reason": "Secure storage for auth tokens (encrypted keychain)",
+      "expo_supported": true
+    },
+    {
+      "name": "react-hook-form",
+      "version": "^7.54.2",
+      "reason": "Form state management with validation",
+      "expo_supported": true
+    },
+    {
+      "name": "zod",
+      "version": "^3.24.1",
+      "reason": "Type-safe schema validation for forms",
+      "expo_supported": true
+    },
+    {
+      "name": "expo-notifications",
+      "version": "~0.29.13",
+      "reason": "Push notifications for messages, reminders, task updates",
+      "expo_supported": true,
+      "notes": "Configured but needs backend setup for sending notifications"
+    },
+    {
+      "name": "expo-image-picker",
+      "version": "~16.0.5",
+      "reason": "Select photos for profile pictures and message attachments",
+      "expo_supported": true
+    },
+    {
+      "name": "expo-document-picker",
+      "version": "~12.0.2",
+      "reason": "Select documents to upload in channels",
+      "expo_supported": true
+    },
+    {
+      "name": "socket.io-client",
+      "version": "^4.8.1",
+      "reason": "Real-time messaging - prepared but using polling as fallback",
+      "expo_supported": true,
+      "notes": "Structure ready, currently using React Query refetchInterval for polling"
+    },
+    {
+      "name": "date-fns",
+      "version": "^4.1.0",
+      "reason": "Date formatting and manipulation for tasks, reminders, messages",
+      "expo_supported": true
+    }
+  ],
+  "state_management": {
+    "server_state": {
+      "library": "React Query (TanStack Query)",
+      "purpose": "Caching API responses, optimistic updates, background refetching",
+      "hooks_created": [
+        "useLogin",
+        "useTasks",
+        "useTask",
+        "useCreateTask",
+        "useUpdateTask",
+        "useDeleteTask",
+        "useChannels",
+        "useChannel",
+        "useChannelMessages",
+        "useSendChannelMessage",
+        "useUsers",
+        "useUser",
+        "useUpdateUser",
+        "useNotifications",
+        "useMarkNotificationRead",
+        "useReminders",
+        "useCreateReminder"
+      ]
+    },
+    "local_state": {
+      "library": "Zustand",
+      "stores": [
+        {
+          "name": "useAuthStore",
+          "purpose": "Current user, authentication status, logout",
+          "state": ["user", "isAuthenticated", "setUser", "clearUser"]
+        },
+        {
+          "name": "useUIStore",
+          "purpose": "Current route, unread counts, UI flags",
+          "state": ["currentRoute", "setCurrentRoute", "unreadCount", "setUnreadCount"]
+        },
+        {
+          "name": "useMessageStore",
+          "purpose": "Message input state per channel/DM",
+          "state": ["messageInputs", "setMessageInput", "clearMessageInput"]
+        }
+      ]
+    }
+  },
+  "testing_setup": {
+    "framework": "Jest + React Native Testing Library",
+    "config_file": "jest.config.js",
+    "coverage_enabled": true,
+    "example_tests_needed": [
+      "src/services/__tests__/auth.service.test.ts",
+      "src/components/__tests__/PlaceholderScreen.test.tsx",
+      "src/screens/__tests__/LoginScreen.test.tsx"
+    ]
+  },
+  "build_configuration": {
+    "android": {
+      "package_name": "com.officeproject.mobile",
+      "build_command": "npm run build:android",
+      "notes": "Needs keystore generation for production signing"
+    },
+    "ios": {
+      "bundle_identifier": "com.officeproject.mobile",
+      "build_command": "npm run build:ios",
+      "notes": "Requires Apple Developer account and provisioning profiles"
+    }
+  },
+  "environment_variables": {
+    "EXPO_PUBLIC_API_URL": {
+      "required": true,
+      "description": "Backend API base URL",
+      "example_dev": "http://192.168.1.100:3000/api",
+      "example_prod": "https://your-domain.com/api"
+    },
+    "EXPO_PUBLIC_DEBUG_MODE": {
+      "required": false,
+      "description": "Enable debug logging",
+      "default": "true"
+    }
+  },
+  "todo": [
+    {
+      "priority": "HIGH",
+      "category": "Backend",
+      "task": "Create /api/auth/mobile/login endpoint with JWT token response",
+      "status": "Not started",
+      "notes": "See README.md Backend Requirements section for implementation guide"
+    },
+    {
+      "priority": "HIGH",
+      "category": "Backend",
+      "task": "Update CORS configuration to allow mobile app origins",
+      "status": "Not started",
+      "notes": "Add exp://* and http://localhost:8081 to allowed origins"
+    },
+    {
+      "priority": "HIGH",
+      "category": "Backend",
+      "task": "Create JWT verification middleware for existing API routes",
+      "status": "Not started",
+      "notes": "See README.md Backend Requirements section for verifyMobileToken implementation"
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "Screens",
+      "task": "Implement RegisterScreen with company creation flow",
+      "status": "Placeholder created",
+      "files": ["src/screens/auth/RegisterScreen.tsx"]
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "Screens",
+      "task": "Implement ForgotPasswordScreen with email submission",
+      "status": "Placeholder created",
+      "files": ["src/screens/auth/ForgotPasswordScreen.tsx"]
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "Screens",
+      "task": "Implement TasksScreen with list, filters, and create FAB",
+      "status": "Placeholder created",
+      "files": ["src/screens/main/TasksScreen.tsx"]
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "Screens",
+      "task": "Implement TaskDetailScreen with comments, status updates, assignees",
+      "status": "Placeholder created",
+      "files": ["src/screens/main/TaskDetailScreen.tsx"]
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "Screens",
+      "task": "Implement ChannelsScreen with channel list and unread badges",
+      "status": "Placeholder created",
+      "files": ["src/screens/main/ChannelsScreen.tsx"]
+    },
+    {
+      "priority": "HIGH",
+      "category": "Screens",
+      "task": "Implement ChannelChatScreen with message list, input, and real-time updates",
+      "status": "Placeholder created",
+      "files": ["src/screens/main/ChannelChatScreen.tsx"],
+      "notes": "Consider using FlatList with inverted prop for chat UX"
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "Screens",
+      "task": "Implement PeopleScreen with user directory and search",
+      "status": "Placeholder created",
+      "files": ["src/screens/main/PeopleScreen.tsx"]
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "Screens",
+      "task": "Implement DirectMessageScreen (similar to ChannelChatScreen)",
+      "status": "Placeholder created",
+      "files": ["src/screens/main/DirectMessageScreen.tsx"]
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "Screens",
+      "task": "Implement NotificationsScreen with notification list",
+      "status": "Placeholder created",
+      "files": ["src/screens/main/NotificationsScreen.tsx"]
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "Screens",
+      "task": "Implement SettingsScreen with profile editing and preferences",
+      "status": "Placeholder created",
+      "files": ["src/screens/main/SettingsScreen.tsx"]
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "Screens",
+      "task": "Implement RemindersScreen with reminder list and CRUD",
+      "status": "Placeholder created",
+      "files": ["src/screens/main/RemindersScreen.tsx"]
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "Screens",
+      "task": "Implement CreateTaskScreen with full form",
+      "status": "Placeholder created",
+      "files": ["src/screens/main/CreateTaskScreen.tsx"]
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "Screens",
+      "task": "Implement MoreScreen with menu navigation",
+      "status": "Placeholder created",
+      "files": ["src/screens/main/MoreScreen.tsx"]
+    },
+    {
+      "priority": "LOW",
+      "category": "Features",
+      "task": "Integrate Socket.IO for real-time messaging",
+      "status": "Service layer ready, not connected",
+      "notes": "Currently using React Query polling as fallback"
+    },
+    {
+      "priority": "LOW",
+      "category": "Features",
+      "task": "Set up push notifications with Expo Notifications",
+      "status": "Package installed, needs backend integration",
+      "notes": "Backend needs to send push tokens to Expo Push API"
+    },
+    {
+      "priority": "LOW",
+      "category": "Features",
+      "task": "Implement file upload UI with ImagePicker and DocumentPicker",
+      "status": "Packages installed, service ready",
+      "files": ["src/services/user.service.ts::uploadFile"]
+    },
+    {
+      "priority": "LOW",
+      "category": "Testing",
+      "task": "Write unit tests for services",
+      "status": "Jest configured, no tests written",
+      "target_coverage": "80%"
+    },
+    {
+      "priority": "LOW",
+      "category": "Testing",
+      "task": "Write integration tests for screens",
+      "status": "Testing library installed, no tests written"
+    },
+    {
+      "priority": "LOW",
+      "category": "DevOps",
+      "task": "Set up EAS Build for production builds",
+      "status": "Not started",
+      "notes": "Need eas.json configuration"
+    },
+    {
+      "priority": "LOW",
+      "category": "DevOps",
+      "task": "Configure app store metadata (icons, splash screens, descriptions)",
+      "status": "Not started"
+    },
+    {
+      "priority": "LOW",
+      "category": "Features",
+      "task": "Implement OAuth providers (Google, GitHub) for mobile",
+      "status": "Not started",
+      "notes": "NextAuth providers need mobile-compatible redirect URLs"
+    }
+  ],
+  "compatibility_notes": {
+    "nextauth": "Uses cookies and server-side sessions - incompatible with mobile. Custom JWT endpoint required.",
+    "socket_io": "Prepared but not active. Using HTTP polling with React Query refetchInterval as fallback.",
+    "cloudinary": "File uploads work via multipart/form-data. Mobile uses Expo ImagePicker/DocumentPicker to select files.",
+    "prisma": "Backend only - mobile communicates via REST API.",
+    "stripe": "Not implemented in mobile. Subscription management should remain web-only or use Stripe mobile SDKs.",
+    "razorpay": "Not implemented in mobile. Payment flows should redirect to web or use native Razorpay SDK."
+  },
+  "performance_considerations": [
+    "Use FlatList/SectionList for long lists (messages, tasks, notifications) to enable virtualization",
+    "Implement pagination for messages and tasks to avoid loading thousands of items",
+    "Use React Query's staleTime and cacheTime to reduce unnecessary API calls",
+    "Optimize images with Expo's Image component (auto-caching, lazy loading)",
+    "Consider using React.memo for frequently re-rendering components",
+    "Use KeyboardAvoidingView for chat input to prevent keyboard overlap",
+    "Implement optimistic updates for better perceived performance (send message before API confirms)"
+  ]
+}
