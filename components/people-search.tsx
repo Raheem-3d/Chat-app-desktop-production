@@ -27,6 +27,7 @@ export default function PeopleSearch({ users, departments, currentUser }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [baseUsers, setBaseUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
+  const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
 
   // Filter users based on role (admin vs employee)
   useEffect(() => {
@@ -80,6 +81,35 @@ export default function PeopleSearch({ users, departments, currentUser }) {
         />
       </div>
 
+      {/* View toggle (card / list) */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center space-x-2">
+          <button
+            type="button"
+            onClick={() => setViewMode('card')}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition ${
+              viewMode === 'card'
+                ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+            }`}
+          >
+            Card
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('list')}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition ${
+              viewMode === 'list'
+                ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+            }`}
+          >
+            List
+          </button>
+        </div>
+        <div className="text-sm text-gray-500">{filteredUsers.length} people</div>
+      </div>
+
       <Tabs defaultValue="all">
         <TabsList>
           <TabsTrigger value="all">All People</TabsTrigger>
@@ -97,19 +127,14 @@ export default function PeopleSearch({ users, departments, currentUser }) {
             </CardHeader>
             <CardContent>
               {filteredUsers.length === 0 ? (
-                <p className="text-center text-sm text-gray-500">
-                  No people found.
-                </p>
-              ) : (
+                <p className="text-center text-sm text-gray-500">No people found.</p>
+              ) : viewMode === 'card' ? (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 ">
                   {filteredUsers.map((user) => (
-                    <div
-                      key={user.id}
-                      className="border rounded-lg p-4 "
-                    >
+                    <div key={user.id} className="border rounded-lg p-4 ">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium">
-                          {user.name?.charAt(0) || "U"}
+                          {user.name?.charAt(0) || 'U'}
                         </div>
                         <div>
                           <p className="font-medium">{user.name}</p>
@@ -117,11 +142,7 @@ export default function PeopleSearch({ users, departments, currentUser }) {
                           <div className="flex items-center mt-1">
                             <Badge variant="outline">{user.role}</Badge>
                             {user.department && (
-                              <Badge
-                                className={`ml-2 ${getDepartmentColor(
-                                  user.department.name
-                                )}`}
-                              >
+                              <Badge className={`ml-2 ${getDepartmentColor(user.department.name)}`}>
                                 {user.department.name}
                               </Badge>
                             )}
@@ -129,15 +150,37 @@ export default function PeopleSearch({ users, departments, currentUser }) {
                         </div>
                       </div>
                       <div className="mt-3 flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          asChild
-                          className="w-full dark:bg-gray-900"
-                        >
-                          <Link href={`/dashboard/messages/${user.id}`}>
-                            Message
-                          </Link>
+                        <Button variant="outline" size="sm" asChild className="w-full dark:bg-gray-900">
+                          <Link href={`/dashboard/messages/${user.id}`}>Message</Link>
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {filteredUsers.map((user) => (
+                    <div key={user.id} className="flex items-center justify-between p-3 border rounded-md">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium">
+                          {user.name?.charAt(0) || 'U'}
+                        </div>
+                        <div>
+                          <p className="font-medium">{user.name}</p>
+                          <p className="text-sm text-gray-500">{user.email}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="hidden sm:flex sm:items-center">
+                          <Badge variant="outline">{user.role}</Badge>
+                          {user.department && (
+                            <Badge className={`ml-2 ${getDepartmentColor(user.department.name)}`}>
+                              {user.department.name}
+                            </Badge>
+                          )}
+                        </div>
+                        <Button variant="ghost" size="sm" asChild>
+                          <Link href={`/dashboard/messages/${user.id}`}>Message</Link>
                         </Button>
                       </div>
                     </div>

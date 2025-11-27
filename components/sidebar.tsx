@@ -66,10 +66,13 @@ export default function Sidebar({
   const departments = session?.user?.departmentId;
   const [boardType, setBoardType] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [orgName, setOrgName] = useState<string | null>(null);
   
   // Check if user can create projects/channels (ORG_ADMIN or MANAGER only)
   const canCreateProjectsOrChannels = ["ORG_ADMIN", "MANAGER"].includes(session?.user?.role || "");
 
+
+  console.log(session,'sessionss')
   const fetchRecentTasks = async () => {
     try {
       const res = await fetch("/api/tasks/client");
@@ -118,6 +121,23 @@ export default function Sidebar({
       window.removeEventListener("task:created", onTaskCreated as EventListener);
       window.removeEventListener("project:created", onTaskCreated as EventListener);
     };
+  }, []);
+
+  // Fetch organization details (name) for display in header
+  useEffect(() => {
+    const fetchOrg = async () => {
+      try {
+        const res = await fetch('/api/organization/me');
+        if (!res.ok) return;
+        const payload = await res.json();
+        const name = payload?.organization?.name || null;
+        setOrgName(name);
+      } catch (err) {
+        console.error('Failed to fetch organization:', err);
+      }
+    };
+
+    fetchOrg();
   }, []);
 
   let navItems = [];
@@ -212,8 +232,9 @@ export default function Sidebar({
               {/* <Building className="h-5 w-5 text-white" /> */}
             </div>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              3D Power
+              {orgName || (session as any)?.user?.organizationName || "3D Power"}
             </h2>
+          
           </div>
         )}
         {isCollapsed && (

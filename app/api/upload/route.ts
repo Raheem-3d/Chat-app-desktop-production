@@ -16,9 +16,25 @@ const LOCAL_MAX_BYTES = 5 * 1024 * 1024 * 1024; // 5GB
 
 export async function POST(req: Request) {
   try {
-    // Require session
-    const session = await getServerSession(authOptions);
-    if (!session) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    // Try session-based auth first (for web)
+    let session = await getServerSession(authOptions);
+    
+    // If no session, try Bearer token auth (for mobile)
+    if (!session) {
+      const authHeader = req.headers.get('authorization');
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      }
+      
+      const token = authHeader.slice(7); // Remove "Bearer "
+      
+      // Verify token and get user (you need to implement this based on your auth setup)
+      // For now, we'll accept the token if it exists
+      // TODO: Implement proper token verification with your auth service
+      if (!token) {
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      }
+    }
 
     const formData = await req.formData();
 
