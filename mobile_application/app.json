@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "ChatApp",
-    "slug": "mobile_application",
+    "slug": "chat-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,20 +13,42 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.mobileApplication"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.mobile_application"
+      "package": "com.anonymous.mobileApplication",
+      "permissions": [
+        "INTERNET",
+        "POST_NOTIFICATIONS",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.INTERNET"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-secure-store"
-    ]
+      "expo-secure-store",
+      "expo-notifications",
+      [
+        "expo-file-system",
+        {
+          "photosPermission": "The app accesses your photos to display and download them."
+        }
+      ],
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "59eb8177-f75d-4eb6-95c5-7fc75b4a5cbe"
+      }
+    },
+    "owner": "raheem.3dpower"
   }
 }

@@ -15,8 +15,12 @@ export function useNotifications() {
     // Register for push notifications
     notificationService.registerForPushNotifications().then((token) => {
       setExpoPushToken(token);
-      // TODO: Send token to your backend
-      // await apiClient.post('/users/push-token', { token });
+      // Send token to backend
+      if (token) {
+        notificationService.sendTokenToBackend(token).catch((error) => {
+          console.error('Failed to send push token to backend:', error);
+        });
+      }
     });
 
     // Listen for notifications received while app is foregrounded

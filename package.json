@@ -111,6 +111,7 @@
     "electron-updater": "^6.6.2",
     "embla-carousel-react": "8.5.1",
     "emoji-picker-react": "latest",
+    "expo-server-sdk": "^3.13.1",
     "express": "latest",
     "framer-motion": "latest",
     "fs": "latest",

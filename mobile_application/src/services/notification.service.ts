@@ -1,5 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
+import { apiClient } from './api';
 
 // Configure notification behavior
 Notifications.setNotificationHandler({
@@ -52,8 +53,14 @@ export class NotificationService {
       }
 
       // Get the token that uniquely identifies this device
+      const projectId = process.env.EXPO_PUBLIC_EXPO_PROJECT_ID;
+      if (!projectId) {
+        console.error('EXPO_PUBLIC_EXPO_PROJECT_ID not set in environment variables');
+        return null;
+      }
+
       const tokenData = await Notifications.getExpoPushTokenAsync({
-        projectId: 'your-project-id', // TODO: Replace with your Expo project ID
+        projectId,
       });
       
       this.expoPushToken = tokenData.data;
@@ -73,6 +80,25 @@ export class NotificationService {
     } catch (error) {
       console.error('Error getting push token:', error);
       return null;
+    }
+  }
+
+  /**
+   * Send push token to backend
+   */
+  async sendTokenToBackend(token: string): Promise<boolean> {
+    try {
+      if (!token) {
+        console.warn('No token provided to sendTokenToBackend');
+        return false;
+      }
+
+      const response = await apiClient.post('/users/push-token', { token });
+      console.log('Push token saved on backend:', response);
+      return true;
+    } catch (error) {
+      console.error('Error sending push token to backend:', error);
+      return false;
     }
   }
 

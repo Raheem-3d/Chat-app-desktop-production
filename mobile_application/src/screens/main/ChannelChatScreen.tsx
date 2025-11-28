@@ -1,309 +1,3 @@
-// import React, { useState, useRef, useEffect } from 'react';
-// import {
-//   View,
-//   Text,
-//   FlatList,
-//   TextInput,
-//   TouchableOpacity,
-//   StyleSheet,
-//   KeyboardAvoidingView,
-//   Platform,
-//   ActivityIndicator,
-// } from 'react-native';
-// import { SafeAreaView } from 'react-native-safe-area-context';
-// import { useRoute, useNavigation } from '@react-navigation/native';
-// import { Ionicons } from '@expo/vector-icons';
-// import { useChannelMessages, useSendChannelMessage } from '../../hooks/useApi';
-// import { useAuthStore } from '../../stores';
-// import theme from '../../theme';
-// import { formatDate } from '../../utils';
-// import { Message } from '../../types';
-
-// type RouteParams = {
-//   channelId: string;
-//   channelName: string;
-// };
-
-// export default function ChannelChatScreen() {
-//   const route = useRoute();
-//   const navigation = useNavigation();
-//   const { channelId, channelName } = (route.params as RouteParams) || {};
-//   const { user } = useAuthStore();
-//   const [messageText, setMessageText] = useState('');
-//   const flatListRef = useRef<FlatList>(null);
-
-//   const { data: messages, isLoading, refetch } = useChannelMessages(channelId);
-
-//   const sendMessage = useSendChannelMessage();
-
-//   // Auto-refresh messages every 5 seconds
-//   useEffect(() => {
-//     const interval = setInterval(() => {
-//       refetch();
-//     }, 5000);
-//     return () => clearInterval(interval);
-//   }, [refetch]);
-
-//   const handleSendMessage = async () => {
-//     if (!messageText.trim()) return;
-
-//     const text = messageText.trim();
-//     setMessageText('');
-
-//     try {
-//       await sendMessage.mutateAsync({
-//         channelId,
-//         data: { content: text },
-//       });
-//       refetch();
-//     } catch (error) {
-//       console.error('Failed to send message:', error);
-//     }
-//   };
-
-//   const renderMessage = ({ item }: { item: Message }) => {
-//     const isOwnMessage = item.senderId === user?.id;
-
-//     return (
-//       <View
-//         style={[
-//           styles.messageContainer,
-//           isOwnMessage ? styles.ownMessageContainer : styles.otherMessageContainer,
-//         ]}
-//       >
-//         {!isOwnMessage && (
-//           <Text style={styles.senderName}>{item.sender?.name || 'Unknown'}</Text>
-//         )}
-//         <View
-//           style={[
-//             styles.messageBubble,
-//             isOwnMessage ? styles.ownMessageBubble : styles.otherMessageBubble,
-//           ]}
-//         >
-//           <Text
-//             style={[
-//               styles.messageText,
-//               isOwnMessage ? styles.ownMessageText : styles.otherMessageText,
-//             ]}
-//           >
-//             {item.content}
-//           </Text>
-//         </View>
-//         <Text style={styles.messageTime}>{formatDate(item.createdAt)}</Text>
-//       </View>
-//     );
-//   };
-
-//   if (isLoading) {
-//     return (
-//       <SafeAreaView style={styles.container} edges={['top']}>
-//         <View style={styles.loading}>
-//           <ActivityIndicator size="large" color={theme.colors.primary[500]} />
-//         </View>
-//       </SafeAreaView>
-//     );
-//   }
-
-
-
-
-//   return (
-//     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-//       {/* Header */}
-//       <View style={styles.header}>
-//         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-//           <Ionicons name="arrow-back" size={24} color={theme.colors.text.primary} />
-//         </TouchableOpacity>
-//         <View style={styles.headerInfo}>
-//           <Text style={styles.headerTitle}>#{channelName}</Text>
-//         </View>
-//       </View>
-
-//       <KeyboardAvoidingView
-//         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-//         style={styles.chatContainer}
-//         keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-//       >
-//         {/* Messages List */}
-//         <FlatList
-//           ref={flatListRef}
-//           data={messages || []}
-//           renderItem={renderMessage}
-//           keyExtractor={(item) => item.id}
-//           contentContainerStyle={styles.messagesList}
-//           inverted={false}
-//           onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
-//           ListEmptyComponent={
-//             <View style={styles.emptyMessages}>
-//               <Text style={styles.emptyText}>No messages yet</Text>
-//               <Text style={styles.emptySubtext}>Start the conversation!</Text>
-//             </View>
-//           }
-//         />
-
-//         {/* Message Input */}
-//         <View style={styles.inputContainer}>
-//           <TextInput
-//             style={styles.input}
-//             placeholder="Type a message..."
-//             placeholderTextColor={theme.colors.text.secondary}
-//             value={messageText}
-//             onChangeText={setMessageText}
-//             multiline
-//             maxLength={1000}
-//           />
-//           <TouchableOpacity
-//             style={[
-//               styles.sendButton,
-//               !messageText.trim() && styles.sendButtonDisabled,
-//             ]}
-//             onPress={handleSendMessage}
-//             disabled={!messageText.trim() || sendMessage.isPending}
-//           >
-//             {sendMessage.isPending ? (
-//               <ActivityIndicator color="#fff" size="small" />
-//             ) : (
-//               <Ionicons name="send" size={20} color="#fff" />
-//             )}
-//           </TouchableOpacity>
-//         </View>
-//       </KeyboardAvoidingView>
-//     </SafeAreaView>
-//   );
-// }
-
-
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: theme.colors.background.default,
-//   },
-//   header: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     paddingHorizontal: theme.spacing.md,
-//     paddingVertical: theme.spacing.sm,
-//     backgroundColor: theme.colors.background.paper,
-//     borderBottomWidth: 1,
-//     borderBottomColor: theme.colors.border.light,
-//   },
-//   backButton: {
-//     padding: theme.spacing.xs,
-//     marginRight: theme.spacing.sm,
-//   },
-//   headerInfo: {
-//     flex: 1,
-//   },
-//   headerTitle: {
-//     ...theme.typography.h3,
-//     color: theme.colors.text.primary,
-//   },
-//   loading: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-//   chatContainer: {
-//     flex: 1,
-//   },
-//   messagesList: {
-//     padding: theme.spacing.md,
-//     flexGrow: 1,
-//   },
-//   messageContainer: {
-//     marginBottom: theme.spacing.md,
-//     maxWidth: '80%',
-//   },
-//   ownMessageContainer: {
-//     alignSelf: 'flex-end',
-//     alignItems: 'flex-end',
-//   },
-//   otherMessageContainer: {
-//     alignSelf: 'flex-start',
-//     alignItems: 'flex-start',
-//   },
-//   senderName: {
-//     ...theme.typography.caption,
-//     color: theme.colors.text.secondary,
-//     marginBottom: 4,
-//     marginLeft: theme.spacing.sm,
-//   },
-//   messageBubble: {
-//     borderRadius: 16,
-//     paddingHorizontal: theme.spacing.md,
-//     paddingVertical: theme.spacing.sm,
-//   },
-//   ownMessageBubble: {
-//     backgroundColor: theme.colors.primary[500],
-//     borderBottomRightRadius: 4,
-//   },
-//   otherMessageBubble: {
-//     backgroundColor: theme.colors.gray[200],
-//     borderBottomLeftRadius: 4,
-//   },
-//   messageText: {
-//     ...theme.typography.body1,
-//   },
-//   ownMessageText: {
-//     color: '#fff',
-//   },
-//   otherMessageText: {
-//     color: theme.colors.text.primary,
-//   },
-//   messageTime: {
-//     ...theme.typography.caption,
-//     color: theme.colors.text.secondary,
-//     marginTop: 4,
-//     marginHorizontal: theme.spacing.sm,
-//   },
-//   emptyMessages: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     paddingVertical: theme.spacing.xxl,
-//   },
-//   emptyText: {
-//     ...theme.typography.h4,
-//     color: theme.colors.text.secondary,
-//   },
-//   emptySubtext: {
-//     ...theme.typography.body2,
-//     color: theme.colors.text.secondary,
-//     marginTop: theme.spacing.xs,
-//   },
-//   inputContainer: {
-//     flexDirection: 'row',
-//     alignItems: 'flex-end',
-//     paddingHorizontal: theme.spacing.md,
-//     paddingVertical: theme.spacing.sm,
-//     backgroundColor: theme.colors.background.paper,
-//     borderTopWidth: 1,
-//     borderTopColor: theme.colors.border.light,
-//   },
-//   input: {
-//     flex: 1,
-//     ...theme.typography.body1,
-//     backgroundColor: theme.colors.background.default,
-//     borderRadius: 20,
-//     paddingHorizontal: theme.spacing.md,
-//     paddingVertical: theme.spacing.sm,
-//     marginRight: theme.spacing.sm,
-//     maxHeight: 100,
-//     color: theme.colors.text.primary,
-//   },
-//   sendButton: {
-//     width: 40,
-//     height: 40,
-//     borderRadius: 20,
-//     backgroundColor: theme.colors.primary[500],
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-//   sendButtonDisabled: {
-//     opacity: 0.5,
-//   },
-// });
 
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -317,13 +11,18 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useChannelMessages, useSendChannelMessage } from '../../hooks/useApi';
+import useOptimisticSend from '../../hooks/useOptimisticSend';
 import { useAuthStore } from '../../stores';
 import { formatDate } from '../../utils';
+import { downloadWithProgress, shareFile } from '../../services/downloadWithProgress';
 import { Message } from '../../types';
 
 // Modern dark theme colors
@@ -343,12 +42,24 @@ const colors = {
   messageBubbleOther: '#334155',
 };
 
+
 type RouteParams = {
   channelId: string;
   channelName: string;
 };
 
-// Avatar color palette
+
+
+// **Web/Desktop:**
+
+// 1. Upload the code to the server.
+// 2. Build the desktop application.
+// 3. Upload the project to GitHub and deploy it on rumzz.com.
+
+// **Mobile App:**
+
+// 1. Create a message list component.
+
 const avatarColors = [
   '#667eea', '#764ba2', '#f093fb', '#4ade80', 
   '#fbbf24', '#3b82f6', '#ec4899', '#8b5cf6'
@@ -360,30 +71,38 @@ export default function ChannelChatScreen() {
   const { channelId, channelName } = (route.params as RouteParams) || {};
   const { user } = useAuthStore();
   const [messageText, setMessageText] = useState('');
+  const [attachmentsToSend, setAttachmentsToSend] = useState<Array<{ uri: string; name: string; type: string; size?: number }>>([]);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [downloadProgress, setDownloadProgress] = useState<number>(0);
   const flatListRef = useRef<FlatList>(null);
 
   const { data: messages, isLoading, refetch } = useChannelMessages(channelId);
-  const sendMessage = useSendChannelMessage();
+  const { sendChannel } = useOptimisticSend();
 
-  // Auto-refresh messages every 5 seconds
+  // Auto-refresh messages every 5 seconds but avoid overwriting optimistic pending messages
   useEffect(() => {
     const interval = setInterval(() => {
-      refetch();
+      try {
+        const hasPending = Array.isArray(messages) && messages.some((m: any) => m && m.__status === 'pending');
+        if (!hasPending) {
+          refetch();
+        }
+      } catch (e) {
+        refetch();
+      }
     }, 5000);
     return () => clearInterval(interval);
-  }, [refetch]);
+  }, [refetch, messages]);
 
   const handleSendMessage = async () => {
-    if (!messageText.trim() || sendMessage.isPending) return;
+    // Allow sending if there's text OR attachments
+    if (!messageText.trim() && attachmentsToSend.length === 0) return;
 
     const text = messageText.trim();
     setMessageText('');
-
     try {
-      await sendMessage.mutateAsync({
-        channelId,
-        data: { content: text },
-      });
+      await sendChannel({ channelId, content: text, files: attachmentsToSend.map(a => ({ uri: a.uri, name: a.name, type: a.type })) });
+      setAttachmentsToSend([]);
       await refetch();
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
@@ -391,6 +110,33 @@ export default function ChannelChatScreen() {
     } catch (error) {
       console.error('Failed to send message:', error);
       setMessageText(text);
+    }
+  };
+
+  const pickImage = async () => {
+    try {
+      const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images', 'videos'], quality: 0.8 });
+      if (!res.canceled && res.assets && res.assets[0]) {
+        const asset = res.assets[0];
+        const mimeType = asset.type === 'video' ? 'video/mp4' : 'image/jpeg';
+        const fileName = asset.fileName || `media_${Date.now()}.${asset.type === 'video' ? 'mp4' : 'jpg'}`;
+        setAttachmentsToSend((prev) => [...prev, { uri: asset.uri, name: fileName, type: mimeType, size: asset.fileSize }]);
+      }
+    } catch (e) {
+      console.warn('pickImage failed', e);
+    }
+  };
+
+  const pickDocument = async () => {
+    try {
+      const res = await DocumentPicker.getDocumentAsync({ type: '*/*', copyToCacheDirectory: true });
+      // expo-document-picker returns { type: 'success'|'cancel', uri, name, size, mimeType }
+      if (res && (res as any).type === 'success') {
+        const doc: any = res;
+        setAttachmentsToSend((prev) => [...prev, { uri: doc.uri, name: doc.name, type: doc.mimeType || 'application/octet-stream', size: doc.size }]);
+      }
+    } catch (e) {
+      console.warn('pickDocument failed', e);
     }
   };
 
@@ -419,6 +165,15 @@ export default function ChannelChatScreen() {
     const prevMessage = messages && index > 0 ? messages[index - 1] : null;
     const showAvatar = !prevMessage || prevMessage.senderId !== item.senderId;
     const senderName = item.sender?.name || 'Unknown User';
+    const statusIndicator = isOwnMessage
+      ? ( (item as any).__status === 'pending'
+          ? <ActivityIndicator size="small" color="rgba(255,255,255,0.9)" />
+          : ( (item as any).__status === 'error'
+              ? <Ionicons name="alert-circle" size={14} color={colors.warning} style={styles.readIcon} />
+              : <Ionicons name="checkmark-done" size={14} color="rgba(255, 255, 255, 0.5)" style={styles.readIcon} />
+            )
+        )
+      : null;
 
     return (
       <View
@@ -457,20 +212,88 @@ export default function ChannelChatScreen() {
             >
               {item.content}
             </Text>
+            {item.attachments && item.attachments.length > 0 && (
+              <View style={styles.attachmentsContainer}>
+                {item.attachments.map((att: any, ai: number) => {
+                  const attachmentId = `${item.id}:att:${ai}`;
+                  const isDownloading = downloadingId === attachmentId;
+                  return (
+                    <View key={attachmentId} style={styles.attachmentItem}>
+                      {att.fileType && att.fileType.startsWith('image/') ? (
+                        <Image source={{ uri: att.fileUrl || att.fileUrl }} style={styles.attachmentImage} />
+                      ) : (
+                        <View style={styles.attachmentFilePlaceholder}>
+                          <Text style={styles.attachmentFileName}>{att.fileName || 'file'}</Text>
+                        </View>
+                      )}
+                      {typeof att.progress === 'number' && att.progress >= 0 && att.progress < 100 && (
+                        <View style={styles.attachmentProgressWrap}>
+                          <View style={[styles.attachmentProgressFill, { width: `${att.progress}%` }]} />
+                        </View>
+                      )}
+                      {typeof att.progress === 'number' && att.progress === -1 && (
+                        <Ionicons name="alert-circle" size={18} color={colors.warning} />
+                      )}
+                      {/* Download & Share Buttons */}
+                      <View style={styles.attachmentButtonsContainer}>
+                        <TouchableOpacity
+                          style={styles.attachmentButton}
+                          onPress={async () => {
+                            try {
+                              setDownloadingId(attachmentId);
+                              setDownloadProgress(0);
+                              await downloadWithProgress(
+                                {
+                                  url: att.fileUrl,
+                                  fileName: att.fileName,
+                                  fileType: att.fileType,
+                                },
+                                (percent) => setDownloadProgress(percent)
+                              );
+                              alert('✅ Download complete!');
+                            } catch (e) {
+                              console.error('Download failed:', e);
+                              alert('❌ Download failed');
+                            } finally {
+                              setDownloadingId(null);
+                              setDownloadProgress(0);
+                            }
+                          }}
+                          disabled={isDownloading}
+                        >
+                          {isDownloading ? (
+                            <ActivityIndicator size="small" color={colors.primary} />
+                          ) : (
+                            <Ionicons name="download" size={16} color={colors.primary} />
+                          )}
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          style={styles.attachmentButton}
+                          onPress={async () => {
+                            try {
+                              await shareFile(att.fileUrl, att.fileName);
+                            } catch (e) {
+                              console.error('Share failed:', e);
+                              alert('❌ Share failed');
+                            }
+                          }}
+                        >
+                          <Ionicons name="share-social" size={16} color={colors.accent} />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  );
+                })}
+              </View>
+            )}
           </View>
           
           <View style={styles.messageFooter}>
             <Text style={styles.messageTime}>
-              {formatMessageTime(item.createdAt)}
+              {formatMessageTime(String(item.createdAt))}
             </Text>
-            {isOwnMessage && (
-              <Ionicons
-                name="checkmark-done"
-                size={14}
-                color="rgba(255, 255, 255, 0.5)"
-                style={styles.readIcon}
-              />
-            )}
+            {statusIndicator}
           </View>
         </View>
       </View>
@@ -554,9 +377,25 @@ export default function ChannelChatScreen() {
 
         {/* Message Input */}
         <View style={styles.inputWrapper}>
+          {/* Selected attachments preview */}
+          {attachmentsToSend.length > 0 && (
+            <View style={styles.selectedAttachmentsRow}>
+              {attachmentsToSend.map((a, idx) => (
+                <View key={a.uri + idx} style={styles.selectedAttachmentItem}>
+                  <Image source={{ uri: a.uri }} style={styles.selectedAttachmentImage} />
+                  <TouchableOpacity onPress={() => setAttachmentsToSend((prev) => prev.filter((_, i) => i !== idx))} style={styles.removeAttachmentButton}>
+                    <Ionicons name="close-circle" size={20} color={colors.warning} />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          )}
           <View style={styles.inputContainer}>
-            <TouchableOpacity style={styles.attachButton}>
-              <Ionicons name="add-circle" size={28} color={colors.primary} />
+            <TouchableOpacity style={styles.attachButton} onPress={pickImage}>
+              <Ionicons name="images-outline" size={28} color={colors.primary} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.attachButton} onPress={pickDocument}>
+              <Ionicons name="document-text-outline" size={28} color={colors.primary} />
             </TouchableOpacity>
 
             <View style={styles.inputBox}>
@@ -574,16 +413,12 @@ export default function ChannelChatScreen() {
             <TouchableOpacity
               style={[
                 styles.sendButton,
-                (!messageText.trim() || sendMessage.isPending) && styles.sendButtonDisabled,
+                (!messageText.trim() && attachmentsToSend.length === 0) && styles.sendButtonDisabled,
               ]}
               onPress={handleSendMessage}
-              disabled={!messageText.trim() || sendMessage.isPending}
+              disabled={!messageText.trim() && attachmentsToSend.length === 0}
             >
-              {sendMessage.isPending ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Ionicons name="send" size={20} color="#fff" />
-              )}
+              <Ionicons name="send" size={20} color="#fff" />
             </TouchableOpacity>
           </View>
         </View>
@@ -834,5 +669,81 @@ const styles = StyleSheet.create({
     backgroundColor: colors.textTertiary,
     shadowOpacity: 0.2,
     opacity: 0.5,
+  },
+  attachmentsContainer: {
+    marginTop: 8,
+    gap: 8,
+  },
+  attachmentItem: {
+    marginTop: 6,
+  },
+  attachmentImage: {
+    width: 160,
+    height: 120,
+    borderRadius: 12,
+    marginTop: 6,
+  },
+  attachmentButtonsContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 6,
+  },
+  attachmentButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.cardLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.primary,
+  },
+  attachmentFilePlaceholder: {
+    width: 160,
+    height: 64,
+    borderRadius: 10,
+    backgroundColor: colors.cardLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 6,
+  },
+  attachmentFileName: {
+    color: colors.textSecondary,
+  },
+  attachmentProgressWrap: {
+    height: 6,
+    backgroundColor: colors.cardLight,
+    borderRadius: 4,
+    overflow: 'hidden',
+    marginTop: 6,
+  },
+  attachmentProgressFill: {
+    height: '100%',
+    backgroundColor: colors.primary,
+  },
+  selectedAttachmentsRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingTop: 8,
+    paddingBottom: 4,
+  },
+  selectedAttachmentItem: {
+    width: 64,
+    height: 64,
+    borderRadius: 8,
+    marginRight: 8,
+    overflow: 'hidden',
+    position: 'relative',
+    backgroundColor: colors.cardLight,
+  },
+  selectedAttachmentImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  removeAttachmentButton: {
+    position: 'absolute',
+    top: -6,
+    right: -6,
   },
 });

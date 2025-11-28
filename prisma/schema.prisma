@@ -50,6 +50,8 @@ model User {
   subscriptionId        String?
   ActivityLog           ActivityLog[]
   AnnouncementDismissal AnnouncementDismissal[]
+  expoPushToken         String?                  // Mobile push notification token
+  pushNotifications     PushNotification[]
 
   @@index([organizationId, role])
   @@index([email])
@@ -628,3 +630,20 @@ enum TrialStatus {
   ACTIVE
   EXPIRED
 }
+
+model PushNotification {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  body        String
+  data        Json?                             // Additional notification data
+  sentAt      DateTime @default(now())
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([createdAt])
+}
+

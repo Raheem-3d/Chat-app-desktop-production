@@ -7,11 +7,15 @@ import { useAuthStore } from '../stores';
 import AuthNavigator from './AuthNavigator';
 import MainNavigator from './MainNavigator';
 import { ActivityIndicator, View } from 'react-native';
+import { useNotifications } from '../hooks/useNotifications';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
   const { isAuthenticated, isLoading } = useAuthStore();
+  
+  // Initialize notifications inside NavigationContainer
+  useNotifications();
 
   if (isLoading) {
     return (

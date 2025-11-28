@@ -20,7 +20,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const AppContent = () => {
+const AppContentWithNotifications = () => {
   const { themeType } = useTheme();
   const setUser = useAuthStore((state) => state.setUser);
   const setLoading = useAuthStore((state) => state.setLoading);
@@ -65,7 +65,7 @@ export default function App() {
     <SafeAreaProvider>
       <ThemeProvider>
         <QueryClientProvider client={queryClient}>
-          <AppContent />
+          <AppContentWithNotifications />
         </QueryClientProvider>
       </ThemeProvider>
     </SafeAreaProvider>

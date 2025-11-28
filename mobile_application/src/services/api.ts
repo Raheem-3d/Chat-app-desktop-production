@@ -4,9 +4,9 @@ import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ApiError, UserSession } from '../types';
 
-// Read API URL from environment (set EXPO_PUBLIC_API_URL in mobile_application/.env) 
-const API_URL = 'http://10.0.9.63:3000/api';
-const DEBUG_API = process.env.EXPO_DEBUG_API === 'true';
+// Read API URL from environment (set EXPO_PUBLIC_API_URL in mobile_application/.env)
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'https://chatapp.rumzz.com/api';
+const DEBUG_API = process.env.EXPO_DEBUG_API === 'true' || process.env.EXPO_PUBLIC_DEBUG_MODE === 'true';
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'auth_user';
 const ASYNC_TOKEN_KEY = 'async_auth_token';
